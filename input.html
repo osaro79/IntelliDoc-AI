@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Information - IntelliDoc AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles specific to the document generator flow */
+        body {
+            padding-top: 80px;
+            background-color: var(--off-white);
+        }
+        
+        .document-flow-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-xl);
+        }
+        
+        .progress-container {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 50%; /* 50% for second step of 4 */
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: right;
+        }
+        
+        .steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .step-indicator.active .step-number {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .step-indicator.completed .step-number {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+        
+        .step-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .step-indicator.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .form-container {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .form-section {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .form-section h3 {
+            margin-bottom: var(--spacing-md);
+            color: var(--primary-dark);
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+            padding: 0 10px;
+            margin-bottom: var(--spacing-md);
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            background-color: var(--white);
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: border-color var(--transition-fast);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .form-group input.error,
+        .form-group select.error,
+        .form-group textarea.error {
+            border-color: var(--danger-color);
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: var(--spacing-xs);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .tooltip-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: var(--secondary-light);
+            color: var(--white);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            font-size: 12px;
+            margin-left: 5px;
+            cursor: help;
+            position: relative;
+        }
+        
+        .tooltip-content {
+            position: absolute;
+            top: -10px;
+            left: 25px;
+            width: 250px;
+            background-color: var(--secondary-dark);
+            color: var(--white);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            font-size: 0.875rem;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .tooltip-icon:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+            top: -5px;
+        }
+        
+        .tooltip-content:before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 15px;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid var(--secondary-dark);
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--spacing-md) 0;
+        }
+        
+        .back-btn i {
+            margin-right: var(--spacing-xs);
+        }
+        
+        .next-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+        
+        .next-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>IntelliDoc AI</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#testimonials">Testimonials</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="#" class="btn btn-secondary">Login</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="document-flow-container">
+        <div class="progress-container">
+            <div class="steps-indicator">
+                <div class="step-indicator completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-label">Select Document</div>
+                </div>
+                <div class="step-indicator active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Enter Information</div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Preview & Payment</div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Delivery</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-text">50% Complete</div>
+        </div>
+        
+        <h2 id="document-title">Enter Document Information</h2>
+        <p id="document-description">Please provide the necessary information to generate your legal document.</p>
+        
+        <div class="form-container">
+            <form id="document-form">
+                <!-- Dynamic form sections will be loaded here based on document type -->
+                
+                <!-- Example form sections for Eviction Notice -->
+                <div id="eviction-notice-form" class="document-form-fields" style="display: none;">
+                    <div class="form-section">
+                        <h3>Property Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="property-address">Property Address <span class="required">*</span></label>
+                                <input type="text" id="property-address" name="propertyAddress" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="property-city">City <span class="required">*</span></label>
+                                <input type="text" id="property-city" name="propertyCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="property-zip">ZIP Code <span class="required">*</span></label>
+                                <input type="text" id="property-zip" name="propertyZip" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Landlord Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="landlord-name">Landlord/Property Manager Name <span class="required">*</span></label>
+                                <input type="text" id="landlord-name" name="landlordName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="landlord-address">Landlord Address <span class="required">*</span></label>
+                                <input type="text" id="landlord-address" name="landlordAddress" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="landlord-phone">Landlord Phone <span class="required">*</span></label>
+                                <input type="tel" id="landlord-phone" name="landlordPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="landlord-email">Landlord Email</label>
+                                <input type="email" id="landlord-email" name="landlordEmail">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Tenant Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tenant-name">Tenant Name(s) <span class="required">*</span></label>
+                                <input type="text" id="tenant-name" name="tenantName" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Eviction Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eviction-reason">Reason for Eviction <span class="required">*</span>
+                                    <span class="tooltip-icon">?
+                                        <span class="tooltip-content">
+                                            Common reasons include non-payment of rent, lease violations, property damage, illegal activity, or end of lease term.
+                                        </span>
+                                    </span>
+                                </label>
+                                <select id="eviction-reason" name="evictionReason" required>
+                                    <option value="" disabled selected>Select Reason</option>
+                                    <option value="non-payment">Non-payment of Rent</option>
+                                    <option value="lease-violation">Lease Violation</option>
+                                    <option value="property-damage">Property Damage</option>
+                                    <option value="illegal-activity">Illegal Activity</option>
+                                    <option value="end-of-lease">End of Lease Term</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eviction-details">Details of Violation/Reason <span class="required">*</span>
+                                    <span class="tooltip-icon">?
+                                        <span class="tooltip-content">
+                                            Provide specific details about the violation or reason for eviction. Include dates, amounts owed, or specific lease clauses violated.
+                                        </span>
+                                    </span>
+                                </label>
+                                <textarea id="eviction-details" name="evictionDetails" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="notice-period">Notice Period <span class="required">*</span>
+                                    <span class="tooltip-icon">?
+                                        <span class="tooltip-content">
+                                            The legally required time period the tenant has to remedy the situation or vacate the property. This varies by state and eviction reason.
+                                        </span>
+                                    </span>
+                                </label>
+                                <select id="notice-period" name="noticePeriod" required>
+                                    <option value="" disabled selected>Select Notice Period</option>
+                                    <option value="3-day">3 Days</option>
+                                    <option value="5-day">5 Days</option>
+                                    <option value="7-day">7 Days</option>
+                                    <option value="10-day">10 Days</option>
+                                    <option value="14-day">14 Days</option>
+                                    <option value="30-day">30 Days</option>
+                                    <option value="60-day">60 Days</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="notice-date">Date of Notice <span class="required">*</span></label>
+                                <input type="date" id="notice-date" name="noticeDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Additional Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="additional-notes">Additional Notes or Special Instructions</label>
+                                <textarea id="additional-notes" name="additionalNotes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Example form sections for Lease Agreement -->
+                <div id="lease-agreement-form" class="document-form-fields" style="display: none;">
+                    <div class="form-section">
+                        <h3>Property Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="la-property-address">Property Address <span class="required">*</span></label>
+                                <input type="text" id="la-property-address" name="propertyAddress" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="la-property-city">City <span class="required">*</span></label>
+                                <input type="text" id="la-property-city" name="propertyCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="la-property-zip">ZIP Code <span class="required">*</span></label>
+                                <input type="text" id="la-property-zip" name="propertyZip" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="property-type">Property Type <span class="required">*</span></label>
+                                <select id="property-type" name="propertyType" required>
+                                    <option value="" disabled selected>Select Property Type</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="house">House</option>
+                                    <option value="condo">Condominium</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="duplex">Duplex</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bedrooms">Number of Bedrooms <span class="required">*</span></label>
+                                <select id="bedrooms" name="bedrooms" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="studio">Studio</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5+">5+</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="bathrooms">Number of Bathrooms <span class="required">*</span></label>
+                                <select id="bathrooms" name="bathrooms" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="1">1</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="2">2</option>
+                                    <option value="2.5">2.5</option>
+                                    <option value="3">3</option>
+                                    <option value="3.5+">3.5+</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Lease Terms</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lease-start">Lease Start Date <span class="required">*</span></label>
+                                <input type="date" id="lease-start" name="leaseStart" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lease-end">Lease End Date <span class="required">*</span></label>
+                                <input type="date" id="lease-end" name="leaseEnd" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="monthly-rent">Monthly Rent Amount <span class="required">*</span></label>
+                                <input type="number" id="monthly-rent" name="monthlyRent" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="security-deposit">Security Deposit Amount <span class="required">*</span></label>
+                                <input type="number" id="security-deposit" name="securityDeposit" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="rent-due-day">Rent Due Day <span class="required">*</span></label>
+                                <select id="rent-due-day" name="rentDueDay" required>
+                                    <option value="" disabled selected>Select</option>
+                                    <option value="1">1st of month</option>
+                                    <option value="5">5th of month</option>
+                                    <option value="10">10th of month</option>
+                                    <option value="15">15th of month</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="late-fee">Late Fee Amount
+                                    <span class="tooltip-icon">?
+                                        <span class="tooltip-content">
+                                            The amount charged if rent is paid after the due date. Check your local laws for maximum allowable late fees.
+                                        </span>
+                                    </span>
+                                </label>
+                                <input type="number" id="late-fee" name="lateFee" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- More lease agreement sections would go here -->
+                </div>
+                
+                <!-- Placeholder for other document types -->
+                <div id="other-document-form" class="document-form-fields" style="display: none;">
+                    <div class="form-section">
+                        <h3>Document Information</h3>
+                        <p>Please fill out the required information for your selected document type.</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="navigation-buttons">
+            <button id="back-btn" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Document Selection</button>
+            <button id="next-btn" class="btn btn-primary next-btn">Continue to Preview <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const documentType = urlParams.get('document');
+            const state = urlParams.get('state');
+            
+            // If no document type or state is provided, redirect back to selection page
+            if (!documentType || !state) {
+                window.location.href = 'select.html';
+                return;
+            }
+            
+            // Set document title and description based on document type
+            const documentTitle = document.getElementById('document-title');
+            const documentDescription = document.getElementById('document-description');
+            
+            // Show the appropriate form based on document type
+            const evictionForm = document.getElementById('eviction-notice-form');
+            const leaseForm = document.getElementById('lease-agreement-form');
+            const otherForm = document.getElementById('other-document-form');
+            
+            switch(documentType) {
+                case 'eviction-notice':
+                    documentTitle.textContent = 'Enter Eviction Notice Information';
+                    documentDescription.textContent = 'Please provide the details needed to generate your eviction notice.';
+                    evictionForm.style.display = 'block';
+                    break;
+                case 'lease-agreement':
+                    documentTitle.textContent = 'Enter Lease Agreement Information';
+                    documentDescription.textContent = 'Please provide the details needed to generate your lease agreement.';
+                    leaseForm.style.display = 'block';
+                    break;
+                default:
+                    documentTitle.textContent = `Enter ${documentType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Information`;
+                    documentDescription.textContent = 'Please provide the details needed to generate your document.';
+                    otherForm.style.display = 'block';
+            }
+            
+            // Back button handler
+            const backBtn = document.getElementById('back-btn');
+            backBtn.addEventListener('click', function() {
+                window.location.href = 'select.html';
+            });
+            
+            // Next button handler
+            const nextBtn = document.getElementById('next-btn');
+            const documentForm = document.getElementById('document-form');
+            
+            nextBtn.addEventListener('click', function() {
+                try {
+                    console.log("Continue to Preview button clicked");
+                    
+                    // In a real application, we would validate all fields
+                    if (validateForm('document-form')) {
+                        console.log("Form validation passed");
+                        
+                        // Collect form data
+                        const formData = new FormData(documentForm);
+                        const formDataObj = {};
+                        
+                        formData.forEach((value, key) => {
+                            formDataObj[key] = value;
+                            console.log(`Form data: ${key} = ${value}`);
+                        });
+                        
+                        // Add document type and state
+                        formDataObj.documentType = documentType;
+                        formDataObj.state = state;
+                        console.log(`Document type: ${documentType}, State: ${state}`);
+                        
+                        // Store form data in sessionStorage for use on preview page
+                        const jsonData = JSON.stringify(formDataObj);
+                        console.log("Storing data in sessionStorage:", jsonData);
+                        sessionStorage.setItem('documentData', jsonData);
+                        
+                        // Redirect to preview page
+                        console.log("Redirecting to preview.html");
+                        window.location.href = 'preview.html';
+                    } else {
+                        console.log("Form validation failed");
+                    }
+                } catch (error) {
+                    console.error("Error in next button handler:", error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

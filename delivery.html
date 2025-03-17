@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery - IntelliDoc AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles specific to the delivery page */
+        body {
+            padding-top: 80px;
+            background-color: var(--off-white);
+        }
+        
+        .document-flow-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-xl);
+        }
+        
+        .progress-container {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 100%; /* 100% for final step */
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: right;
+        }
+        
+        .delivery-content {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .delivery-message {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .delivery-status {
+            background-color: var(--off-white);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .status-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+            font-size: 0.875rem;
+        }
+        
+        .status-item.completed .status-icon {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+        
+        .status-item.in-progress .status-icon {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .status-item.pending .status-icon {
+            background-color: var(--light-gray);
+            color: var(--text-muted);
+        }
+        
+        .status-text {
+            flex: 1;
+        }
+        
+        .status-time {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .download-section {
+            margin-top: var(--spacing-xl);
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md) var(--spacing-xl);
+            background-color: var(--success-color);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+        }
+        
+        .download-btn:hover {
+            background-color: var(--success-dark);
+        }
+        
+        .download-btn i {
+            margin-right: var(--spacing-sm);
+        }
+        
+        .download-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .delivery-footer {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--light-gray);
+            text-align: center;
+        }
+        
+        .delivery-footer p {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .action-buttons {
+            margin-top: var(--spacing-lg);
+        }
+        
+        .action-btn {
+            margin: 0 var(--spacing-sm);
+        }
+        
+        .countdown {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>IntelliDoc AI</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#testimonials">Testimonials</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="#" class="btn btn-secondary">Login</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="document-flow-container">
+        <div class="progress-container">
+            <div class="steps-indicator">
+                <div class="step-indicator completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-label">Select Document</div>
+                </div>
+                <div class="step-indicator completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-label">Enter Information</div>
+                </div>
+                <div class="step-indicator completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-label">Preview & Payment</div>
+                </div>
+                <div class="step-indicator active">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Delivery</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-text">100% Complete</div>
+        </div>
+
+        <div class="delivery-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h2>Document Delivery</h2>
+            
+            <div class="delivery-message">
+                <p>Your payment has been processed successfully. Your document is now being prepared for delivery.</p>
+                <p>You will receive an email with your document shortly. You can also download it directly from this page once it's ready.</p>
+            </div>
+            
+            <div class="delivery-status">
+                <h3>Document Status</h3>
+                <ul class="status-list">
+                    <li class="status-item completed">
+                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                        <div class="status-text">Payment Processed</div>
+                        <div class="status-time">Just now</div>
+                    </li>
+                    <li class="status-item in-progress">
+                        <div class="status-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="status-text">Document Generation</div>
+                        <div class="status-time">In progress - <span id="countdown">0:30</span></div>
+                    </li>
+                    <li class="status-item pending">
+                        <div class="status-icon"><i class="fas fa-clock"></i></div>
+                        <div class="status-text">Legal Review</div>
+                        <div class="status-time">Pending</div>
+                    </li>
+                    <li class="status-item pending">
+                        <div class="status-icon"><i class="fas fa-clock"></i></div>
+                        <div class="status-text">Final Delivery</div>
+                        <div class="status-time">Pending</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="download-section">
+                <button class="download-btn disabled" disabled>
+                    <i class="fas fa-file-download"></i> Download Document
+                </button>
+                <p class="download-note">Your document will be available for download shortly.</p>
+            </div>
+            
+            <div class="delivery-footer">
+                <p>Thank you for using IntelliDoc AI!</p>
+                <p>Need another document? Return to our homepage to start a new document.</p>
+                
+                <div class="action-buttons">
+                    <a href="index.html" class="btn btn-secondary action-btn">Return to Homepage</a>
+                    <a href="select.html" class="btn btn-primary action-btn">Create Another Document</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start countdown timer for document generation
+            startDeliveryCountdown(0.5, 'countdown');
+            
+            // Simulate document generation completion after countdown
+            setTimeout(function() {
+                // Update status
+                const generationStatus = document.querySelector('.status-item.in-progress');
+                generationStatus.classList.remove('in-progress');
+                generationStatus.classList.add('completed');
+                
+                const generationIcon = generationStatus.querySelector('.status-icon');
+                generationIcon.innerHTML = '<i class="fas fa-check"></i>';
+                
+                const generationTime = generationStatus.querySelector('.status-time');
+                generationTime.textContent = 'Completed';
+                
+                // Update legal review status to in-progress
+                const legalReviewStatus = document.querySelectorAll('.status-item.pending')[0];
+                legalReviewStatus.classList.remove('pending');
+                legalReviewStatus.classList.add('in-progress');
+                
+                const legalReviewIcon = legalReviewStatus.querySelector('.status-icon');
+                legalReviewIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                const legalReviewTime = legalReviewStatus.querySelector('.status-time');
+                legalReviewTime.textContent = 'In progress';
+                
+                // Enable download button
+                const downloadBtn = document.querySelector('.download-btn');
+                downloadBtn.classList.remove('disabled');
+                downloadBtn.removeAttribute('disabled');
+                
+                const downloadNote = document.querySelector('.download-note');
+                downloadNote.textContent = 'Your document is now available for download.';
+                
+                // Add click event to download button
+                downloadBtn.addEventListener('click', function() {
+                    alert('In a real application, this would download your document.');
+                });
+            }, 30000); // 30 seconds
+        });
+    </script>
+</body>
+</html>

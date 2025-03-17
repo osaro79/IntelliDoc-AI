@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Document Type - IntelliDoc AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles specific to the document generator flow */
+        body {
+            padding-top: 80px;
+            background-color: var(--off-white);
+        }
+        
+        .document-flow-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-xl);
+        }
+        
+        .progress-container {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 25%; /* 25% for first step of 4 */
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: right;
+        }
+        
+        .steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .step-indicator.active .step-number {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+        
+        .step-indicator.completed .step-number {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+        
+        .step-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .step-indicator.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .document-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .document-card {
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-align: center;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .document-card.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(49, 130, 206, 0.05);
+        }
+        
+        .document-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .document-card h3 {
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+        
+        .document-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
+        
+        .jurisdiction-selector {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .jurisdiction-selector h3 {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-color);
+        }
+        
+        .select-container {
+            position: relative;
+        }
+        
+        .select-container select {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            background-color: var(--white);
+            appearance: none;
+            font-size: 1rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        
+        .select-container:after {
+            content: '\f078';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-link i {
+            margin-right: var(--spacing-xs);
+        }
+        
+        .next-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+        
+        .next-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>IntelliDoc AI</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#testimonials">Testimonials</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="#" class="btn btn-secondary">Login</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="document-flow-container">
+        <div class="progress-container">
+            <div class="steps-indicator">
+                <div class="step-indicator active">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Select Document</div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Enter Information</div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Preview & Payment</div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Delivery</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-text">25% Complete</div>
+        </div>
+        
+        <h2>Select Document Type</h2>
+        <p>Choose the type of legal document you need to generate.</p>
+        
+        <div class="document-types">
+            <div class="document-card" data-document="eviction-notice">
+                <div class="document-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3>Eviction Notice</h3>
+                <p>Formal notice to vacate property due to lease violations or non-payment.</p>
+            </div>
+            
+            <div class="document-card" data-document="lease-agreement">
+                <div class="document-icon">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <h3>Lease Agreement</h3>
+                <p>Comprehensive rental contract between landlord and tenant.</p>
+            </div>
+            
+            <div class="document-card" data-document="property-damage">
+                <div class="document-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <h3>Property Damage Notice</h3>
+                <p>Documentation of property damage and required remediation.</p>
+            </div>
+            
+            <div class="document-card" data-document="rent-increase">
+                <div class="document-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>Rent Increase Notice</h3>
+                <p>Formal notification of upcoming rent increase.</p>
+            </div>
+            
+            <div class="document-card" data-document="maintenance-request">
+                <div class="document-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3>Maintenance Request Form</h3>
+                <p>Standardized form for tenants to request property repairs.</p>
+            </div>
+            
+            <div class="document-card" data-document="lease-termination">
+                <div class="document-icon">
+                    <i class="fas fa-door-open"></i>
+                </div>
+                <h3>Lease Termination</h3>
+                <p>Notice to end a lease agreement before or at expiration.</p>
+            </div>
+        </div>
+        
+        <div class="jurisdiction-selector">
+            <h3>Select Jurisdiction</h3>
+            <p>Choose the state where the property is located to ensure compliance with local laws.</p>
+            
+            <div class="select-container">
+                <select id="state-select" required>
+                    <option value="" disabled selected>Select State</option>
+                    <option value="AL">Alabama</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                    <option value="AR">Arkansas</option>
+                    <option value="CA">California</option>
+                    <option value="CO">Colorado</option>
+                    <option value="CT">Connecticut</option>
+                    <option value="DE">Delaware</option>
+                    <option value="FL">Florida</option>
+                    <option value="GA">Georgia</option>
+                    <option value="HI">Hawaii</option>
+                    <option value="ID">Idaho</option>
+                    <option value="IL">Illinois</option>
+                    <option value="IN">Indiana</option>
+                    <option value="IA">Iowa</option>
+                    <option value="KS">Kansas</option>
+                    <option value="KY">Kentucky</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="ME">Maine</option>
+                    <option value="MD">Maryland</option>
+                    <option value="MA">Massachusetts</option>
+                    <option value="MI">Michigan</option>
+                    <option value="MN">Minnesota</option>
+                    <option value="MS">Mississippi</option>
+                    <option value="MO">Missouri</option>
+                    <option value="MT">Montana</option>
+                    <option value="NE">Nebraska</option>
+                    <option value="NV">Nevada</option>
+                    <option value="NH">New Hampshire</option>
+                    <option value="NJ">New Jersey</option>
+                    <option value="NM">New Mexico</option>
+                    <option value="NY">New York</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="ND">North Dakota</option>
+                    <option value="OH">Ohio</option>
+                    <option value="OK">Oklahoma</option>
+                    <option value="OR">Oregon</option>
+                    <option value="PA">Pennsylvania</option>
+                    <option value="RI">Rhode Island</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="SD">South Dakota</option>
+                    <option value="TN">Tennessee</option>
+                    <option value="TX">Texas</option>
+                    <option value="UT">Utah</option>
+                    <option value="VT">Vermont</option>
+                    <option value="VA">Virginia</option>
+                    <option value="WA">Washington</option>
+                    <option value="WV">West Virginia</option>
+                    <option value="WI">Wisconsin</option>
+                    <option value="WY">Wyoming</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            <button id="next-btn" class="btn btn-primary next-btn disabled" disabled>Continue to Information <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const documentCards = document.querySelectorAll('.document-card');
+            const stateSelect = document.getElementById('state-select');
+            const nextBtn = document.getElementById('next-btn');
+            
+            let selectedDocument = null;
+            
+            // Document card selection
+            documentCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    documentCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Store selected document type
+                    selectedDocument = this.getAttribute('data-document');
+                    
+                    // Check if we can enable the next button
+                    validateSelection();
+                });
+            });
+            
+            // State selection
+            stateSelect.addEventListener('change', function() {
+                validateSelection();
+            });
+            
+            // Validate selection to enable/disable next button
+            function validateSelection() {
+                if (selectedDocument && stateSelect.value) {
+                    nextBtn.classList.remove('disabled');
+                    nextBtn.removeAttribute('disabled');
+                } else {
+                    nextBtn.classList.add('disabled');
+                    nextBtn.setAttribute('disabled', 'disabled');
+                }
+            }
+            
+            // Next button click handler
+            nextBtn.addEventListener('click', function() {
+                if (selectedDocument && stateSelect.value) {
+                    // In a real application, we would store these values
+                    // and pass them to the next page or use a backend API
+                    
+                    // For this demo, we'll just redirect to the input page
+                    // with query parameters
+                    window.location.href = `input.html?document=${selectedDocument}&state=${stateSelect.value}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

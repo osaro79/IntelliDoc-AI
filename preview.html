@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview & Payment - IntelliDoc AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles specific to the preview page */
+        body {
+            padding-top: 80px;
+            background-color: var(--off-white);
+        }
+        
+        .document-flow-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-xl);
+        }
+        
+        .progress-container {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 75%; /* 75% for third step of 4 */
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: right;
+        }
+        
+        #document-preview {
+            background-color: var(--off-white);
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            font-family: 'Times New Roman', Times, serif;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .preview-header {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .preview-body {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .preview-footer {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .payment-section {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .payment-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            padding: 0 10px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--spacing-md) 0;
+        }
+        
+        .back-btn i {
+            margin-right: var(--spacing-xs);
+        }
+        
+        .submit-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>IntelliDoc AI</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#testimonials">Testimonials</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="#" class="btn btn-secondary">Login</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="document-flow-container">
+        <div class="progress-container">
+            <div class="steps-indicator">
+                <div class="step-indicator completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-label">Select Document</div>
+                </div>
+                <div class="step-indicator completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-label">Enter Information</div>
+                </div>
+                <div class="step-indicator active">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Preview & Payment</div>
+                </div>
+                <div class="step-indicator">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Delivery</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-text">75% Complete</div>
+        </div>
+
+        <h2>Preview Your Document</h2>
+        <p>Review your document before proceeding to payment. This is a preview of how your final document will appear.</p>
+        
+        <div id="document-preview">
+            <!-- Document preview will be dynamically loaded here -->
+            <div class="loading-message">Loading document preview...</div>
+        </div>
+
+        <div class="payment-section">
+            <h2>Payment Information</h2>
+            <p>Your document will be professionally formatted and reviewed by our legal experts before delivery.</p>
+            
+            <form id="payment-form" class="payment-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="card-holder">Cardholder Name <span class="required">*</span></label>
+                        <input type="text" id="card-holder" name="cardHolder" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="card-element">Credit or Debit Card <span class="required">*</span></label>
+                        <div id="card-element" class="form-control" style="padding: var(--spacing-md); border: 2px solid var(--light-gray); border-radius: var(--border-radius-md); background-color: var(--white); min-height: 40px;">
+                            <!-- Stripe Card Element will be inserted here -->
+                        </div>
+                        <div id="card-errors" role="alert" style="color: #dc3545; margin-top: 8px; font-size: 0.875rem;"></div>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button type="button" id="back-btn" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Information</button>
+                    <button type="submit" class="btn btn-primary submit-btn">Complete Payment <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Preview page loaded");
+            
+            // Initialize Stripe
+            const stripe = Stripe('pk_test_your_publishable_key');
+            const elements = stripe.elements();
+            
+            // Create card elements
+            const cardElement = elements.create('card');
+            
+            // Mount the card element to the container
+            cardElement.mount('#card-element');
+            
+            // Handle real-time validation errors
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+            
+            try {
+                // Load document data from sessionStorage
+                const documentDataString = sessionStorage.getItem('documentData');
+                console.log("Retrieved from sessionStorage:", documentDataString);
+                
+                if (!documentDataString) {
+                    console.error("No document data found in sessionStorage");
+                    alert("No document data found. Redirecting to input page.");
+                    window.location.href = 'input.html';
+                    return;
+                }
+                
+                const documentData = JSON.parse(documentDataString);
+                console.log("Parsed document data:", documentData);
+                
+                // Use the updatePreview function from script.js to display the document
+                updatePreview(documentData);
+                
+                // Back button handler
+                const backBtn = document.getElementById('back-btn');
+                backBtn.addEventListener('click', function() {
+                    window.location.href = 'input.html';
+                });
+                
+                // Handle payment form submission
+                const paymentForm = document.getElementById('payment-form');
+                paymentForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    console.log("Payment form submitted");
+                    
+                    // Process payment with Stripe
+                    stripe.createPaymentMethod({
+                        type: 'card',
+                        card: cardElement,
+                        billing_details: {
+                            name: document.getElementById('card-holder').value,
+                        },
+                    }).then(function(result) {
+                        if (result.error) {
+                            // Show error to your customer
+                            console.error(result.error.message);
+                            alert('Payment failed: ' + result.error.message);
+                        } else {
+                            // Send the payment method ID to your server
+                            console.log('PaymentMethod ID: ' + result.paymentMethod.id);
+                            
+                            // In a real application, you would send the payment method ID to your server
+                            // and create a payment intent. For this demo, we'll just redirect to the delivery page.
+                            window.location.href = 'delivery.html';
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error("Error in preview page:", error);
+                alert("An error occurred while loading the preview. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>
